@@ -1,0 +1,10 @@
+import { findProfile } from './_users-facade.js';
+
+export function get(req, res) {
+  const userFind = findProfile(req.session.user);
+  const result = {
+    ok: userFind.id !== -1,
+    ...(userFind.id !== -1) ? userFind : {},
+  }
+  res.end(JSON.stringify(result));
+}
