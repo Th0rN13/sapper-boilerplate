@@ -1,6 +1,6 @@
 {
-  "name": "pet-proj",
-  "description": "PetProject - online simple project management system",
+  "name": "sapper-boilerplate",
+  "description": "Sapper boilerplate with user login\register, user sessions, dotenv etc",
   "license": "MIT",
   "version": "0.0.1",
   "scripts": {
@@ -21,6 +21,7 @@
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "express-session": "^1.17.0",
+    "fulmo": "./../../svelte/fulmo",
     "node-fetch": "^2.6.0",
     "pg": "^7.14.0",
     "polka": "^0.5.2",

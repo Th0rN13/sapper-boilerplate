@@ -1,10 +1,10 @@
 
 <script>
-  import NavLink from './UI/NavLink.svelte';
-  import ProfileMenu from './ProfileMenu.svelte';
+  import { userProfile } from 'stores/user.js';
+  import NavLink from 'UI/NavLink.svelte';
+  import ProfileMenu from 'Menu/Profile.svelte';
 
   export let segment;
-  export let userData = {};
 
   $: menuVisible = (segment, false);
 
@@ -16,10 +16,6 @@
     {
       href: 'about',
       name: 'About',
-    },
-    {
-      href: 'uikit',
-      name: 'UI Kit',
     },
   ];
 </script>
@@ -37,8 +33,8 @@
     {/each}
   </ul>
   <div class="nav__user">
-    {#if (userData.ok)}
-      <ProfileMenu {menuVisible} {userData} />
+    {#if ($userProfile && $userProfile.ok)}
+      <ProfileMenu {menuVisible} userData={$userProfile} />
     {:else}
       <NavLink
         selected={segment === 'register'}

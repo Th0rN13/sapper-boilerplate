@@ -1,5 +1,6 @@
 <script context="module">
   import { fetchOptions } from 'helpers/fetch';
+  import { userProfile } from 'stores/user.js';
   export async function preload(page, session) {
     const res = await this.fetch(`user/profile`, fetchOptions);
     const userData = await res.json();
@@ -8,22 +9,15 @@
 </script>
 
 <script>
-  import Nav from 'components/Nav.svelte';
   import { stores } from '@sapper/app';
+  import Nav from 'components/Nav.svelte';
   const { session } = stores();
 
   export let segment;
   export let userData;
+  userProfile.set(userData);
 
-  async function updateUser (userId) {
-    if (process.browser) {
-      const res = await fetch(`user/profile`, fetchOptions);
-      userData = await res.json();
-    }
-  }
-
-  $: userId = $session.user;
-  $: updateUser(userId);
+  $: userProfile.update($session.user);
 </script>
 
 <Nav {segment} {userData} />

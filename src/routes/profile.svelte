@@ -3,9 +3,12 @@
 </svelte:head>
 
 <script>
-  import { EditColumns } from 'Board';
+  import { userProfile } from 'stores/user.js';
+  import { Input } from 'fulmo';
+
+  let {login, email} = $userProfile;
+
 </script>
 
-<h1>Setup your columns</h1>
-
-<EditColumns />
+<Input label="Login" bind:value={login} />
+<Input label="Email" bind:value={email} />

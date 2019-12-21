@@ -4,7 +4,7 @@
 
 <script>
   import { goto, stores, prefetch } from '@sapper/app';
-  import { Input, Button } from 'UI';
+  import { Input, Button } from 'fulmo';
   import { post } from 'helpers/fetch';
 
   const { session } = stores();

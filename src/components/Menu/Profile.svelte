@@ -1,10 +1,11 @@
 <script>
+  import { userProfile } from 'stores/user.js';
   import { goto, stores } from '@sapper/app';
   import { post } from 'helpers/fetch';
 
   const { session } = stores();
   let menuVisible = false;
-  export let userData;
+  // export let userData;
   let avatarLoaded = false;
 
   async function logout () {
@@ -29,22 +30,25 @@
 
 <button class="profile-button" on:click={toggleMenu}>
   <div class="profile-name" class:profile-name-hidden={avatarLoaded}>
-    {userData.name.slice(0,1)}
+    {$userProfile.name.slice(0,1)}
   </div>
-  {#if (userData.avatar)}
+  {#if ($userProfile.avatar)}
     <img
-      src="none"
+      src={$userProfile.avatar}
       alt="avatar"
       class="profile-avatar"
       class:profile-avatar-hidden={!avatarLoaded}
-      use:loadAvatar={{ src: userData.avatar}}
+      use:loadAvatar={{ src: $userProfile.avatar}}
     >
   {/if}
 </button>
 {#if (menuVisible)}
   <div class="backdrop" on:click={toggleMenu}></div>
   <div class="profile-menu">
-    {userData.name}
+    <div>Signed as {$userProfile.name}</div>
+    <div>
+      <a rel="prefetch" href='profile'>Profile</a>
+    </div>
     <button on:click={logout}>Logout</button>
   </div>
 {/if}
