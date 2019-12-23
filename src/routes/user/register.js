@@ -1,4 +1,4 @@
-import { registerUser } from './_users-facade.js';
+import { registerUser } from './_users.js';
 
 export function post(req, res) {
   const result = registerUser(req.body);

@@ -4,7 +4,7 @@
 
 <script>
   import { goto, stores, prefetch } from '@sapper/app';
-  import { Input, Button } from 'fulmo';
+  import { Input, Button, Checkbox } from 'fulmo/cmp';
   import { post } from 'helpers/fetch';
 
   const { session } = stores();
@@ -36,6 +36,7 @@
 <div class="login-form">
   <Input label="Login" bind:value={login} />
   <Input label="Password" type="password" bind:value={password} />
+  <Checkbox label="Remember me" checked />
   <Button
     title="Login"
     disabled={disabled || loading}

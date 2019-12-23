@@ -5,8 +5,17 @@
   import ProfileMenu from 'Menu/Profile.svelte';
 
   export let segment;
+  let menuVisible = false;
 
   $: menuVisible = (segment, false);
+
+  function profileMenuClose() {
+    menuVisible = false;
+  }
+
+  function profileMenuOpen() {
+    menuVisible = true;
+  }
 
   const links = [
     {
@@ -34,7 +43,12 @@
   </ul>
   <div class="nav__user">
     {#if ($userProfile && $userProfile.ok)}
-      <ProfileMenu {menuVisible} userData={$userProfile} />
+      <ProfileMenu
+        {menuVisible}
+        on:close={profileMenuClose}
+        on:open={profileMenuOpen}
+        userData={$userProfile}
+      />
     {:else}
       <NavLink
         selected={segment === 'register'}

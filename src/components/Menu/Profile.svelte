@@ -1,10 +1,12 @@
 <script>
   import { userProfile } from 'stores/user.js';
   import { goto, stores } from '@sapper/app';
+  import { createEventDispatcher } from 'svelte';
   import { post } from 'helpers/fetch';
 
+  const dispatch = createEventDispatcher();
   const { session } = stores();
-  let menuVisible = false;
+  export let menuVisible = false;
   // export let userData;
   let avatarLoaded = false;
 
@@ -14,8 +16,12 @@
     goto('login');
   }
 
-  function toggleMenu() {
-    menuVisible = !menuVisible;
+  function closeMenu() {
+    dispatch('close');
+  }
+
+  function openMenu() {
+    dispatch('open');
   }
 
   function loadAvatar(node, data) {
@@ -28,7 +34,7 @@
   }
 </script>
 
-<button class="profile-button" on:click={toggleMenu}>
+<button class="profile-button" on:click={openMenu}>
   <div class="profile-name" class:profile-name-hidden={avatarLoaded}>
     {$userProfile.name.slice(0,1)}
   </div>
@@ -38,13 +44,13 @@
       alt="avatar"
       class="profile-avatar"
       class:profile-avatar-hidden={!avatarLoaded}
-      use:loadAvatar={{ src: $userProfile.avatar}}
+      use:loadAvatar={{ src: $userProfile.avatar }}
     >
   {/if}
 </button>
 {#if (menuVisible)}
-  <div class="backdrop" on:click={toggleMenu}></div>
-  <div class="profile-menu">
+  <div class="backdrop" on:click={closeMenu}></div>
+  <div class="profile-menu" on:click={closeMenu}>
     <div>Signed as {$userProfile.name}</div>
     <div>
       <a rel="prefetch" href='profile'>Profile</a>

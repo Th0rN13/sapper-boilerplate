@@ -3,7 +3,8 @@ import crypto from 'crypto';
 
 let users = [];
 let usersLoaded = false;
-const fileName = process.cwd() + '\\.userdb\\db.json';
+const usersFile = process.cwd() + '\\.userdb\\db.json';
+const emailFile = process.cwd() + '\\.userdb\\email.json';
 
 const emptyUser = {
   id: -1,
@@ -24,7 +25,7 @@ function generateHash (password) {
 export function loadUsers () {
   let fileData;
   try {
-    fileData = fs.readFileSync(fileName, 'utf8');
+    fileData = fs.readFileSync(usersFile, 'utf8');
     users = JSON.parse(fileData);
   } catch (err) {
     users = [];
@@ -43,7 +44,7 @@ export function loadUsers () {
 export function saveUsers () {
   try {
     const fileData = JSON.stringify(users, null, 2);
-    fs.writeFileSync(fileName, fileData, 'utf8');
+    fs.writeFileSync(usersFile, fileData, 'utf8');
   } catch (e) {
     console.log('Error write file', e);
   }
@@ -102,5 +103,42 @@ export function registerUser (newUser) {
       ok: true,
       user: newId
     };
+  }
+}
+
+function findUserConfirmEmail (hash) {
+  let fileData;
+  try {
+    fileData = fs.readFileSync(emailFile, 'utf8');
+    emails = JSON.parse(fileData);
+  } catch (err) {
+    emails = [];
+    if (err.name === 'SyntaxError') {
+      console.log('Error in data file, deleting');
+    } else if (err.code === 'ENOENT') {
+      console.log('Create file');
+      saveEmails();
+    } else {
+      console.log('Other error:', JSON.stringify(err, null, 2));
+    }
+  }
+
+}
+
+export function confirmEmail (hash) {
+  let fileData;
+  try {
+    fileData = fs.readFileSync(emailFile, 'utf8');
+    emails = JSON.parse(fileData);
+  } catch (err) {
+    emails = [];
+    if (err.name === 'SyntaxError') {
+      console.log('Error in data file, deleting');
+    } else if (err.code === 'ENOENT') {
+      console.log('Create file');
+      saveEmails();
+    } else {
+      console.log('Other error:', JSON.stringify(err, null, 2));
+    }
   }
 }

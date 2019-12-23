@@ -1,4 +1,4 @@
 import { config } from 'dotenv';
 config();
 
-export const apiURL = process.env.API_URL;
+export const databaseType = process.env.DATABASE_TYPE;

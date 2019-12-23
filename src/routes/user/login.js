@@ -1,4 +1,4 @@
-import { findLogin } from './_users-facade.js';
+import { findLogin } from './_users.js';
 
 export function post(req, res) {
   const result = findLogin(req.body.login, req.body.password);
