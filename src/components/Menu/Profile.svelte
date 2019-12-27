@@ -40,7 +40,7 @@
   </div>
   {#if ($userProfile.avatar)}
     <img
-      src={$userProfile.avatar}
+      src=""
       alt="avatar"
       class="profile-avatar"
       class:profile-avatar-hidden={!avatarLoaded}

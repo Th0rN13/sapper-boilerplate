@@ -5,7 +5,7 @@ function createUserProfile() {
   const { subscribe, set } = writable({});
 
   return {
-    subscribe,
+    subscribe, set,
     update: async () => {
       if (process.browser) {
         const res = await fetch(`user/profile`, fetchOptions);
@@ -13,7 +13,6 @@ function createUserProfile() {
         set(userData);
       }
     },
-    set: set,
   }
 }
 

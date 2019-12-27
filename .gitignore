@@ -6,4 +6,4 @@ yarn-error.log
 /__sapper__/
 .env
 .sessions
-.userdb/db.json
+.userdb
