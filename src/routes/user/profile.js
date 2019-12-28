@@ -1,4 +1,4 @@
-import { findProfile } from './_users.js';
+import { findProfile } from 'db/usersDb.js';
 
 export function get(req, res) {
   const userFind = findProfile(req.session.user);

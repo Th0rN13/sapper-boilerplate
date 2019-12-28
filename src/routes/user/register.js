@@ -1,4 +1,4 @@
-import { registerUser } from './_users.js';
+import { registerUser } from 'db/usersDb.js';
 
 export function post(req, res) {
   const result = registerUser(req.body);

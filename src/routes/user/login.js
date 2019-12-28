@@ -1,4 +1,4 @@
-import { tryLogin } from './_users.js';
+import { tryLogin } from 'db/usersDb.js';
 
 export function post(req, res) {
   const result = tryLogin(req.body.login, req.body.password);

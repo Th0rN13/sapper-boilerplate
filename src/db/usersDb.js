@@ -1,6 +1,6 @@
 import { databaseType } from 'helpers/config.js';
 
-import * as facadeFile from '_facades/file.js';
+import * as facadeFile from './facades/file.js';
 let selectedDb;
 
 const databaseFacades = {

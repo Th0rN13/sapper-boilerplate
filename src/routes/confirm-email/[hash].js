@@ -1,4 +1,4 @@
-import { confirmEmail } from '../_users.js';
+import { confirmEmail } from 'db/usersDb.js';
 
 export function get(req, res) {
   const { hash } = req.params;

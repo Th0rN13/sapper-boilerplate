@@ -2,7 +2,7 @@
   import { fetchOptions } from 'helpers/fetch';
   export async function preload({ params, query }, session) {
     const hash = params.hash;
-    const res = await this.fetch(`user/reset-password`, {
+    const res = await this.fetch(`reset-password`, {
       ...fetchOptions,
       method: 'POST',
       body: JSON.stringify({ hash }),
@@ -20,5 +20,6 @@
 
 <div>
   {hash}
+  <br>
   {JSON.stringify(resultConfirm)}
 </div>
