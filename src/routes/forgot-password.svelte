@@ -1,5 +1,5 @@
 <svelte:head>
-  <title>Login</title>
+  <title>Recover password</title>
 </svelte:head>
 
 <script>
@@ -9,49 +9,34 @@
 
   const { session } = stores();
   let login = '';
-  let password = '';
   let errorMsg = '';
-  $: disabled = !login || !password;
+  $: disabled = !login;
   let loading = false;
 
-  async function tryLogin () {
+  async function resetPassword () {
     prefetch('/');
     loading = true;
-    const response = await post('user/login', {
+    const response = await post('user/reset-password', {
       login,
-      password
     });
     loading = false;
+    console.log(response);
     if (response.ok) {
-      errorMsg = 'Login ok';
-      $session.user = response.user;
-      goto('/');
+      errorMsg = 'Check your email to reset password';
     } else {
       errorMsg = response.error;
     }
-  }
-
-  async function forgot () {
-    goto('forgot-password');
   }
 </script>
 
 <div class="login-form">
   <Input label="Login" bind:value={login} />
-  <Input label="Password" type="password" bind:value={password} />
-  <Checkbox label="Remember me" checked />
   <Button
     title="Login"
     disabled={disabled || loading}
-    on:click={tryLogin}
+    on:click={resetPassword}
     {loading}
   />
-  <Button
-    title="Forgot password?"
-    on:click={forgot}
-    disabled={loading}
-  />
-  {errorMsg}
 </div>
 
 <style>

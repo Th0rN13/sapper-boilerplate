@@ -4,7 +4,7 @@
 
 <script>
   import { userProfile } from 'stores/user.js';
-  import { Input } from 'fulmo';
+  import { Input } from 'fulmo/cmp';
 
   let {login, email} = $userProfile;
 

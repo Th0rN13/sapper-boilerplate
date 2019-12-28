@@ -2,31 +2,31 @@ import { databaseType } from 'helpers/config.js';
 
 import * as facadeFile from '_facades/file.js';
 let selectedDb;
-let confirmEmail, registerUser, findProfile, tryLogin;
 
-switch (databaseType.toLowerCase()) {
-  case 'file':
-    console.log('Use file database');
-    selectedDb = facadeFile;
-    break;
-  case 'mysql':
-    console.log('Use MySQL database');
-    ({confirmEmail, registerUser, findProfile, tryLogin} = facadeMysql);
-    break;
-  case 'pssql':
-    console.log('Use PostgreSQL database');
-    ({confirmEmail, registerUser, findProfile, tryLogin} = facadePssql);
-    break;
-  default:
-    console.log('No database defined, setup .env file, look .env-example');
-    process.exit();
+const databaseFacades = {
+  file: {
+    facade: facadeFile,
+    description: 'Use file database',
+  },
+  mysql: {
+    facade: null,
+    description: 'Use MySQL database',
+  },
+  pssql: {
+    facade: null,
+    description: 'Use PostgreSQL database',
+  },
 }
 
-({confirmEmail, registerUser, findProfile, tryLogin} = selectedDb);
+const selectedFacade = databaseFacades[databaseType.toLowerCase()];
+console.log(selectedFacade.description);
+selectedDb = selectedFacade.facade;
 
-export {
-  confirmEmail,
-  registerUser,
+export const {
+  tryLogin,
   findProfile,
-  tryLogin
-}
+  registerUser,
+  confirmEmail,
+  resetPassword,
+  createResetHash,
+} = selectedDb;

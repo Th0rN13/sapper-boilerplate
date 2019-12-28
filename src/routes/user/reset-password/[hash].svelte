@@ -1,20 +1,24 @@
 <script context="module">
+  import { fetchOptions } from 'helpers/fetch';
   export async function preload({ params, query }, session) {
-    const res = await this.fetch(`user/reset-password/${params.hash}`, fetchOptions);
+    const hash = params.hash;
+    const res = await this.fetch(`user/reset-password`, {
+      ...fetchOptions,
+      method: 'POST',
+      body: JSON.stringify({ hash }),
+    });
     const resultConfirm = await res.json();
-    return { resultConfirm };
+    return { resultConfirm, hash };
   }
 </script>
 
 <script >
   export let resultConfirm;
+  export let hash;
 
 </script>
 
 <div>
-  {#if resultConfirm.ok}
-    Email confirmed
-  {:else}
-    Error
-  {/if}
+  {hash}
+  {JSON.stringify(resultConfirm)}
 </div>
