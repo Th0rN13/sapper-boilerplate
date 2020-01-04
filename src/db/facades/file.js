@@ -124,10 +124,22 @@ function confirmEmail (hash) {
 function changePassword (tryHash, password) {
   console.log('Try hash', tryHash);
   const passwords = loadJSON(passwordsDbFile);
-  const findUserId = passwords.find(({ hash }) => hash === tryHash).user_id;
+  const findPassword = passwords.find(({ hash }) => hash === tryHash);
+  if (!findPassword) {
+    return {
+      ok: false,
+      message: 'Error in hash',
+    };
+  }
+  if (password === '') {
+    return {
+      ok: true,
+      message: 'Hash ok, wait for password',
+    };
+  }
   const users = loadJSON(usersDbFile);
-  const userFind = users.find(({ id }) => (id === findUserId));
-  userFind.password = generateHash('123');
+  const userFind = users.find(({ id }) => (id === findPassword.id));
+  userFind.password = generateHash(password);
   saveJSON(usersDbFile, users);
 }
 

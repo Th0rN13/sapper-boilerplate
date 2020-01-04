@@ -26,5 +26,11 @@
     text-decoration: none;
     padding: 1rem 1rem;
     display: block;
+    border-radius: 2px;
+  }
+
+  a:hover {
+    background-color: #00000020;
+    box-shadow: 0 0 2px 2px #00000020;
   }
 </style>
