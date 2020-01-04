@@ -1,12 +1,13 @@
 
 <script>
-  import { userProfile } from 'stores/user.js';
   import NavLink from 'UI/NavLink.svelte';
   import ProfileMenu from 'Menu/Profile.svelte';
+  import { stores } from '@sapper/app';
+  const { session } = stores();
 
   export let segment;
-  let menuVisible = false;
 
+  let menuVisible = false;
   $: menuVisible = (segment, false);
 
   function profileMenuClose() {
@@ -42,12 +43,12 @@
     {/each}
   </ul>
   <div class="nav__user">
-    {#if ($userProfile && $userProfile.ok)}
+    {#if ($session.user && $session.user.id)}
       <ProfileMenu
         {menuVisible}
         on:close={profileMenuClose}
         on:open={profileMenuOpen}
-        userData={$userProfile}
+        userData={$session.user}
       />
     {:else}
       <NavLink

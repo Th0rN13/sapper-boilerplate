@@ -28,7 +28,7 @@
       $session.user = response.user;
       goto('/');
     } else {
-      errorMsg = response.error;
+      errorMsg = response.message;
     }
   }
 

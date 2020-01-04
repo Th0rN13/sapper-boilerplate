@@ -31,11 +31,15 @@ function tryLogin (login, password) {
   const users = loadJSON(usersDbFile);
   const userFind = users.find((user) => (user.login === login));
   const hashPassword = generateHash(password);
-  return {
-    ok: (userFind && userFind.password === hashPassword),
-    error: userFind ? 'Password error' : 'Login error',
-    user: (userFind && userFind.password === hashPassword) ? userFind.id : -1,
+  const ok = (userFind && userFind.password === hashPassword);
+  const message = ok ? '' : userFind ? 'Password error' : 'Login error';
+  const user_id = ok ? userFind.id : -1;
+  const result = {
+    ok,
+    ...(!ok) ? {message} : {},
+    ...(ok) ? {user_id} : {},
   }
+  return result;
 }
 
 function findUserById (idFind) {
@@ -46,7 +50,7 @@ function findUserById (idFind) {
 function loadProfile (idFind) {
   const userFind = findUserById(idFind) || emptyUser;
   const { id, login, name, avatar, email } = userFind;
-  return { id, login, name, avatar, email };
+  return { id, login, name, avatar };
 }
 
 function checkLoginExist (newLogin) {
@@ -67,13 +71,11 @@ function registerUser (newUser) {
   if (checkLoginExist(newUser.login)) {
     return {
       ok: false,
-      error: true,
       message: 'Login already in use',
     }
   } else if (checkEmailExist(newUser.email)) {
     return {
       ok: false,
-      error: true,
       message: 'Email already in use',
     }
   } else {
@@ -81,9 +83,10 @@ function registerUser (newUser) {
     const createdUser = {...newUser, id: newId, password: generateHash(newUser.password)};
     users.push(createdUser);
     saveJSON(usersDbFile, users);
+    const { id, login, name, avatar } = createdUser;
     return {
       ok: true,
-      user: newId
+      user: { id, login, name, avatar }
     };
   }
 }

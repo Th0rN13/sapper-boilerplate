@@ -26,13 +26,13 @@
 
   async function tryRegister () {
     loading = true;
-    console.log(login, name, email, password)
     const response = await post('user/register', {
       login,
       name,
       email,
       password
     });
+    console.log(response);
     if (response.ok) {
       errorMsg = 'Registered';
       $session.user = response.user;
