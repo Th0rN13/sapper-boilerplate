@@ -16,7 +16,7 @@
   async function resetPassword () {
     prefetch('/');
     loading = true;
-    const response = await post('user/reset-password', {
+    const response = await post('reset-password/create-hash', {
       login,
     });
     loading = false;

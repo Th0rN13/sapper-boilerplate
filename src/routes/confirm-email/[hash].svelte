@@ -1,6 +1,6 @@
 <script context="module">
   export async function preload({ params, query }, session) {
-    const res = await this.fetch(`user/confirm-email/${params.hash}`, fetchOptions);
+    const res = await this.fetch(`confirm-email/${params.hash}`, fetchOptions);
     const resultConfirm = await res.json();
     return { resultConfirm };
   }

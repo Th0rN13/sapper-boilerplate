@@ -6,11 +6,19 @@ let selectedDb;
 const databaseFacades = {
   file: {
     facade: facadeFile,
-    description: 'Use file database',
+    description: 'Use file JSON database',
   },
   mysql: {
     facade: null,
     description: 'Use MySQL database',
+  },
+  mongo: {
+    facade: null,
+    description: 'Use MongoDB',
+  },
+  sqlite: {
+    facade: null,
+    description: 'Use SQLite database',
   },
   pssql: {
     facade: null,
@@ -24,9 +32,9 @@ selectedDb = selectedFacade.facade;
 
 export const {
   tryLogin,
-  findProfile,
+  loadProfile,
   registerUser,
   confirmEmail,
-  resetPassword,
+  changePassword,
   createResetHash,
 } = selectedDb;

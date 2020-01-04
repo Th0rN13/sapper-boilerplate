@@ -1,7 +1,7 @@
-import { findProfile } from 'db/usersDb.js';
+import { loadProfile } from 'db/usersDb.js';
 
 export function get(req, res) {
-  const userFind = findProfile(req.session.user);
+  const userFind = loadProfile(req.session.user);
   const result = {
     ok: userFind.id !== -1,
     ...(userFind.id !== -1) ? userFind : {},

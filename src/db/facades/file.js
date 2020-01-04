@@ -1,19 +1,23 @@
 import fs from 'fs';
 import crypto from 'crypto';
 import uuid from 'uuid/v4';
+import { send } from './email.js';
 
 const usersDbFile = process.cwd() + '\\.userdb\\user.json';
 const emailsDbFile = process.cwd() + '\\.userdb\\email.json';
 const passwordsDbFile = process.cwd() + '\\.userdb\\password.json';
-const avatarsDbFile = process.cwd() + '\\.userdb\\avatar.json';
 
 const emptyUser = {
   id: -1,
-  login: 'none',
+  is_active: true,
+  name: '',
+  login: '',
   password: '',
-  name: 'Unregistered user',
-  avatar: '',
   email: '',
+  email_verified: false,
+  created_time: Date.now(),
+  last_login_time: Date.now(),
+  avatar: '',
 }
 
 function generateHash (password) {
@@ -34,10 +38,13 @@ function tryLogin (login, password) {
   }
 }
 
-function findProfile (idFind) {
+function findUserById (idFind) {
   const users = loadJSON(usersDbFile);
-  let userFind = users.find((user) => (user.id === idFind));
-  if (!userFind) userFind = emptyUser;
+  return users.find((user) => (user.id === idFind));
+}
+
+function loadProfile (idFind) {
+  const userFind = findUserById(idFind) || emptyUser;
   const { id, login, name, avatar, email } = userFind;
   return { id, login, name, avatar, email };
 }
@@ -111,7 +118,7 @@ function confirmEmail (hash) {
   console.log(hash);
 }
 
-function resetPassword (tryHash, password) {
+function changePassword (tryHash, password) {
   console.log('Try hash', tryHash);
   const passwords = loadJSON(passwordsDbFile);
   const findUserId = passwords.find(({ hash }) => hash === tryHash).user_id;
@@ -122,8 +129,10 @@ function resetPassword (tryHash, password) {
 }
 
 function createResetHash (login) {
+  console.log('Create reset hash for login:', login);
   const users = loadJSON(usersDbFile);
   const userFind = users.find((user) => (user.login === login));
+  // TODO: check also email
   if (!userFind) {
     console.log('Login not found');
     return {
@@ -136,6 +145,8 @@ function createResetHash (login) {
   let passwords = loadJSON(passwordsDbFile);
   // remove expired hashes
   passwords = passwords.filter(({time}) => (timeNow - time < 10 * 60 * 1000));
+  // remove old hash for this userId
+  passwords = passwords.filter(({user_id}) => !(user_id === userFind.id));
   const newHash = uuid();
   passwords.push({
     hash: newHash,
@@ -143,8 +154,10 @@ function createResetHash (login) {
     time: timeNow,
   })
   saveJSON(passwordsDbFile, passwords);
-  console.log(userFind, timeNow);
-  // TODO: send email
+  send(userFind.email, 'reset-pass', {
+    name: userFind.name,
+    hash: newHash,
+  })
   return {
     ok: true,
     error: false,
@@ -154,9 +167,9 @@ function createResetHash (login) {
 
 export {
   tryLogin,
-  findProfile,
+  loadProfile,
   registerUser,
   confirmEmail,
-  resetPassword,
+  changePassword,
   createResetHash,
 };

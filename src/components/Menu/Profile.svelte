@@ -1,5 +1,5 @@
 <script>
-  import { userProfile } from 'stores/user.js';
+  // import { userProfile } from 'stores/user.js';
   import { goto, stores } from '@sapper/app';
   import { createEventDispatcher } from 'svelte';
   import { post } from 'helpers/fetch';
@@ -7,7 +7,7 @@
   const dispatch = createEventDispatcher();
   const { session } = stores();
   export let menuVisible = false;
-  // export let userData;
+  export let userData;
   let avatarLoaded = false;
 
   async function logout () {
@@ -36,22 +36,22 @@
 
 <button class="profile-button" on:click={openMenu}>
   <div class="profile-name" class:profile-name-hidden={avatarLoaded}>
-    {$userProfile.name.slice(0,1)}
+    {userData.name.slice(0,1)}
   </div>
-  {#if ($userProfile.avatar)}
+  {#if (userData.avatar)}
     <img
       src=""
       alt="avatar"
       class="profile-avatar"
       class:profile-avatar-hidden={!avatarLoaded}
-      use:loadAvatar={{ src: $userProfile.avatar }}
+      use:loadAvatar={{ src: userData.avatar }}
     >
   {/if}
 </button>
 {#if (menuVisible)}
   <div class="backdrop" on:click={closeMenu}></div>
   <div class="profile-menu" on:click={closeMenu}>
-    <div>Signed as {$userProfile.name}</div>
+    <div>Signed as {userData.name}</div>
     <div>
       <a rel="prefetch" href='profile'>Profile</a>
     </div>

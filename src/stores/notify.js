@@ -1,11 +1,11 @@
 import { writable } from 'svelte/store';
 
-// notfication type
+// notification type\color (succers\error\info)
 // id
 // label
 // text
 // time to remove?
-// important
+// important (remove only by click)
 
 function createNotifyStore() {
   const { subscribe, update } = writable([]);
@@ -17,15 +17,6 @@ function createNotifyStore() {
     }),
     deleteNote: (removeId) => update((store) => {
       return store.filter((note) => note.id !== removeId);
-    }),
-    updateColumn: (updateId, newColumn) => update((store) => {
-      const idx = store.findIndex((column) => column.id === updateId);
-      store[idx] = {
-        ...store[idx],
-        ...newColumn,
-        id: updateId,
-      }
-      return store;
     }),
   }
 }

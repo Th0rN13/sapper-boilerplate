@@ -20,7 +20,7 @@
   $: userProfile.update($session.user);
 </script>
 
-<Nav {segment} {userData} />
+<Nav {segment} />
 <main>
   <slot></slot>
 </main>
