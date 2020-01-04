@@ -3,9 +3,11 @@
 </svelte:head>
 
 <script>
-  import { goto, stores } from '@sapper/app';
   import { Input, Button } from 'fulmo/cmp';
   import { post } from 'helpers/fetch';
+  import AnimPage from './_animate-page.svelte';
+
+  import { goto, stores } from '@sapper/app';
   const { session } = stores();
 
   let login = '';
@@ -42,20 +44,22 @@
   }
 </script>
 
-<div class="login-form">
-  <Input label="Login" bind:value={login} />
-  <Input label="Name" bind:value={name} />
-  <Input label="Email" bind:value={email} />
-  <Input label="Password" type="password" bind:value={password} />
-  <Input label="Repeat password" type="password" bind:value={repeatPassword} />
-  <Button
-    title="Register"
-    disabled={disabled || loading}
-    on:click={tryRegister}
-    {loading}
-  />
-  {errorMsg}
-</div>
+<AnimPage>
+  <div class="login-form">
+    <Input label="Login" bind:value={login} />
+    <Input label="Name" bind:value={name} />
+    <Input label="Email" bind:value={email} />
+    <Input label="Password" type="password" bind:value={password} />
+    <Input label="Repeat password" type="password" bind:value={repeatPassword} />
+    <Button
+      title="Register"
+      disabled={disabled || loading}
+      on:click={tryRegister}
+      {loading}
+    />
+    {errorMsg}
+  </div>
+</AnimPage>
 
 <style>
   .login-form {

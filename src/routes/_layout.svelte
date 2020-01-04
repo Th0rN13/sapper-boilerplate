@@ -22,10 +22,10 @@
 
 <Nav {segment} />
 <main>
-  <slot></slot>
+  <slot/>
 </main>
 
-<style>
+<style lang="postcss">
   main {
     position: relative;
     width: 100%;

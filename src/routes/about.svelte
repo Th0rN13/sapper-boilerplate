@@ -2,6 +2,12 @@
   <title>About</title>
 </svelte:head>
 
-<h1>About this site</h1>
+<script>
+  import AnimPage from './_animate-page.svelte';
+</script>
 
-<p>This is the 'about' page. There's not much here.</p>
+<AnimPage>
+  <h1>About this site</h1>
+
+  <p>This is the 'about' page. There's not much here.</p>
+</AnimPage>

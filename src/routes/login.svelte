@@ -6,6 +6,7 @@
   import { goto, stores, prefetch } from '@sapper/app';
   import { Input, Button, Checkbox } from 'fulmo/cmp';
   import { post } from 'helpers/fetch';
+  import AnimPage from './_animate-page.svelte';
 
   const { session } = stores();
   let login = '';
@@ -36,23 +37,25 @@
   }
 </script>
 
-<div class="login-form">
-  <Input label="Login" bind:value={login} />
-  <Input label="Password" type="password" bind:value={password} />
-  <Checkbox label="Remember me" checked />
-  <Button
-    title="Login"
-    disabled={disabled || loading}
-    on:click={tryLogin}
-    {loading}
-  />
-  <Button
-    title="Forgot password?"
-    on:click={forgot}
-    disabled={loading}
-  />
-  {errorMsg}
-</div>
+<AnimPage>
+  <div class="login-form">
+    <Input label="Login" bind:value={login} />
+    <Input label="Password" type="password" bind:value={password} />
+    <Checkbox label="Remember me" checked />
+    <Button
+      title="Login"
+      disabled={disabled || loading}
+      on:click={tryLogin}
+      {loading}
+    />
+    <Button
+      title="Forgot password?"
+      on:click={forgot}
+      disabled={loading}
+    />
+    {errorMsg}
+  </div>
+</AnimPage>
 
 <style>
   .login-form {
