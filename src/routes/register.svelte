@@ -5,7 +5,7 @@
 <script>
   import { Input, Button } from 'fulmo/cmp';
   import { post } from 'helpers/fetch';
-  import AnimPage from './_animate-page.svelte';
+  import AnimPage from 'AnimatePage.svelte';
 
   import { goto, stores } from '@sapper/app';
   const { session } = stores();

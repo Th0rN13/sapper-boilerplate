@@ -3,7 +3,7 @@
 </svelte:head>
 
 <script>
-  import AnimPage from './_animate-page.svelte';
+  import AnimPage from 'AnimatePage.svelte';
 </script>
 
 <AnimPage>

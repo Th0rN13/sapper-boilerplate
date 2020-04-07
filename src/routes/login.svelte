@@ -6,7 +6,7 @@
   import { goto, stores, prefetch } from '@sapper/app';
   import { Input, Button, Checkbox } from 'fulmo/cmp';
   import { post } from 'helpers/fetch';
-  import AnimPage from './_animate-page.svelte';
+  import AnimPage from 'AnimatePage.svelte';
 
   const { session } = stores();
   let login = '';

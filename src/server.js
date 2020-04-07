@@ -3,16 +3,16 @@ import polka from 'polka';
 import compression from 'compression';
 import { json } from 'body-parser';
 import session from 'express-session';
-import sessionFileStore from 'session-file-store';
-// import pg from 'pg';
-// import connectPgSimple from 'connect-pg-simple';
+import sessionSequelize from 'express-session-sequelize';
 import * as sapper from '@sapper/server';
+import { sequelizeDb } from 'db/db.js';
+const sessionSequelizeStore = sessionSequelize(session.Store);
 
 const { PORT, NODE_ENV } = process.env;
 const dev = NODE_ENV === 'development';
-const FileStore = sessionFileStore(session);
-// const pgSession = connectPgSimple(session);
-// const pgPool = new pg.Pool({});
+const sessionStore = new sessionSequelizeStore({
+  db: sequelizeDb,
+});
 
 polka()
   .use(json())
@@ -22,13 +22,7 @@ polka()
       resave: false,
       saveUninitialized: true,
       cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 },
-      store: new FileStore({
-        path: `.sessions`,
-      }),
-      // store: new pgSession({
-      //   pool: pgPool,
-      //   tableName: 'uses_sessions',
-      // }),
+      store: sessionStore,
     })
   )
   .use(

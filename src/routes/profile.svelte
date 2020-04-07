@@ -4,7 +4,7 @@
 
 <script>
   import { Input } from 'fulmo/cmp';
-  import AnimPage from './_animate-page.svelte';
+  import AnimPage from 'AnimatePage.svelte';
   import { stores } from '@sapper/app';
   const { session } = stores();
 
