@@ -6,7 +6,6 @@
 </script>
 
 <AnimPage>
-  <Logo width="40" height=40 />
   <Button title="Main Page" />
 
   <Checkbox label="Remember me" checked />

@@ -1,26 +1,57 @@
-import Sequelize from 'sequelize';
+import { Sequelize } from 'sequelize';
 import crypto from 'crypto';
-import nanoid from 'nanoid';
 import { send } from './email';
 
-export const sequelizeDb = new Sequelize({
+export const sequelize = new Sequelize({
   storage: 'db/db.sqlite',
   dialect: 'sqlite',
   logging: false,
 });
 
-const emptyUser = {
-  id: -1,
-  is_active: true,
-  name: '',
-  login: '',
-  password: '',
-  email: '',
-  email_verified: false,
-  created_time: Date.now(),
-  last_login_time: Date.now(),
-  avatar: '',
-}
+const User = sequelize.define('user', {
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  isActive: {
+    type: Sequelize.BOOLEAN,
+    field: 'is_active',
+    defaultValue: false,
+  },
+  name: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  login:  {
+    type: Sequelize.STRING,
+    allowNull: false,
+    unique: {
+      args: true,
+      message: 'login already exist',
+    },
+  },
+  password:  {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  email:  {
+    type: Sequelize.STRING,
+    allowNull: false,
+    unique: {
+      args: true,
+      message: 'email already exist',
+    },
+  },
+  emailVerified: {
+    type: Sequelize.BOOLEAN,
+    field: 'email_verified',
+    defaultValue: false,
+  },
+  avatar: Sequelize.STRING,
+});
+
+sequelize.sync();
 
 function generateHash (password) {
   // TODO: add some salt, change hash function?
@@ -29,75 +60,63 @@ function generateHash (password) {
   return hash.digest('hex');
 }
 
-function tryLogin (login, password) {
-  const users = loadJSON(usersDbFile);
-  const userFind = users.find((user) => (user.login === login));
+export async function tryLogin (login, password) {
+  const userFind = await User.findOne({
+    where: { login }
+  });
   const hashPassword = generateHash(password);
   const ok = (userFind && userFind.password === hashPassword);
   const message = ok ? '' : userFind ? 'Password error' : 'Login error';
-  const user_id = ok ? userFind.id : -1;
+  const { id, name, avatar } = userFind;
+  const user = { id, login, name, avatar };
   const result = {
     ok,
-    ...(!ok) ? {message} : {},
-    ...(ok) ? {user_id} : {},
+    ...(!ok && {message}),
+    ...(ok && {user}),
   }
   return result;
 }
 
-function findUserById (idFind) {
-  const users = loadJSON(usersDbFile);
-  return users.find((user) => (user.id === idFind));
+// export async function loadProfile (idToFind) {
+//   const userFind = await User.findOne({
+//     where: { id: idToFind },
+//   }) || emptyUser;
+//   const { id, login, name, avatar } = userFind;
+//   return { id, login, name, avatar };
+// }
+
+export async function checkLoginExist (newLogin) {
+  return false;
 }
 
-function loadProfile (idFind) {
-  const userFind = findUserById(idFind) || emptyUser;
-  const { id, login, name, avatar, email } = userFind;
-  return { id, login, name, avatar };
+export async function checkEmailExist (newEmail) {
+  return false;
 }
 
-function checkLoginExist (newLogin) {
-  const users = loadJSON(usersDbFile);
-  const newLoginLow = newLogin.toLowerCase();
-  return users.some(({login}) => login.toLowerCase() === newLoginLow);
-}
-
-function checkEmailExist (newEmail) {
-  const users = loadJSON(usersDbFile);
-  const newEmailLow = newEmail.toLowerCase();
-  return users.some(({email}) => email.toLowerCase() === newEmailLow);
-}
-
-function registerUser (newUser) {
-  const users = loadJSON(usersDbFile);
-  generateHash(newUser.password);
-  if (checkLoginExist(newUser.login)) {
-    return {
-      ok: false,
-      message: 'Login already in use',
-    }
-  } else if (checkEmailExist(newUser.email)) {
-    return {
-      ok: false,
-      message: 'Email already in use',
-    }
-  } else {
-    const newId = Math.max(0, ...users.map(({id}) => id)) + 1;
-    const createdUser = {...newUser, id: newId, password: generateHash(newUser.password)};
-    users.push(createdUser);
-    saveJSON(usersDbFile, users);
-    const { id, login, name, avatar } = createdUser;
+export async function registerUser (newUser) {
+  try {
+    const { id, login, name, avatar } = newUser;
+    newUser.password = generateHash(newUser.password);
+    await User.create(newUser);
     return {
       ok: true,
       user: { id, login, name, avatar }
     };
+  } catch(err) {
+    if (err.errors && err.errors[0] && err.errors[0].validatorKey === 'not_unique') {
+      return {
+        ok: false,
+        message: err.errors[0].message,
+      }
+    }
   }
 }
 
-function confirmEmail (hash) {
+export async function confirmEmail (hash) {
   console.log(hash);
 }
 
-function changePassword (tryHash, password) {
+export async function changePassword (tryHash, password) {
   console.log('Try hash', tryHash);
   const passwords = loadJSON(passwordsDbFile);
   const findPassword = passwords.find(({ hash }) => hash === tryHash);
@@ -119,7 +138,7 @@ function changePassword (tryHash, password) {
   saveJSON(usersDbFile, users);
 }
 
-function createResetHash (login) {
+export async function createResetHash (login) {
   console.log('Create reset hash for login:', login);
   const users = loadJSON(usersDbFile);
   const userFind = users.find((user) => (user.login === login));
@@ -155,12 +174,3 @@ function createResetHash (login) {
     message: 'Check your email to reset password',
   }
 }
-
-export {
-  tryLogin,
-  loadProfile,
-  registerUser,
-  confirmEmail,
-  changePassword,
-  createResetHash,
-};

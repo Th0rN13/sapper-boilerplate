@@ -36,7 +36,7 @@
 
 <button class="profile-button" on:click={openMenu}>
   <div class="profile-name" class:profile-name-hidden={avatarLoaded}>
-    {userData.name.slice(0,1)}
+    {userData.name && userData.name.slice && userData.name.slice(0,1)}
   </div>
   {#if (userData.avatar)}
     <img

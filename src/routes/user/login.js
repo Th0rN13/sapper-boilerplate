@@ -1,11 +1,9 @@
-import { tryLogin, loadProfile } from 'db/db';
+import { tryLogin } from 'db/db';
 
-export function post(req, res) {
-  const result = tryLogin(req.body.login, req.body.password);
-  if (result.ok && result.user_id !== -1) {
-    const user = loadProfile(result.user_id);
-    req.session.user = user;
-    result.user = user;
+export async function post(req, res) {
+  const result = await tryLogin(req.body.login, req.body.password);
+  if (result.ok) {
+    req.session.user = result.user;
   }
   res.end(JSON.stringify(result));
 }

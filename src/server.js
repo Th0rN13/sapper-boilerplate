@@ -5,13 +5,13 @@ import { json } from 'body-parser';
 import session from 'express-session';
 import sessionSequelize from 'express-session-sequelize';
 import * as sapper from '@sapper/server';
-import { sequelizeDb } from 'db/db.js';
+import { sequelize } from 'db/db.js';
 const sessionSequelizeStore = sessionSequelize(session.Store);
 
 const { PORT, NODE_ENV } = process.env;
 const dev = NODE_ENV === 'development';
 const sessionStore = new sessionSequelizeStore({
-  db: sequelizeDb,
+  db: sequelize,
 });
 
 polka()

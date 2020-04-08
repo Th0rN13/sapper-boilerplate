@@ -33,7 +33,9 @@ export default {
     input: config.client.input(),
     output: config.client.output(),
     plugins: [
-      svelteSVG(),
+      svelteSVG({
+        hydratable: true,
+      }),
       replace({
         'process.browser': true,
         'process.env.NODE_ENV': JSON.stringify(mode)
