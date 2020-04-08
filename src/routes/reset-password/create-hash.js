@@ -1,4 +1,4 @@
-import { createResetHash } from 'db/usersDb.js';
+import { createResetHash } from 'db/db.js';
 
 export function post(req, res) {
   console.log('Post request');

@@ -1,4 +1,4 @@
-import { changePassword } from 'db/usersDb.js';
+import { changePassword } from 'db/db.js';
 
 export function post(req, res) {
   console.log('Post request');
