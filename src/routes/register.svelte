@@ -17,10 +17,12 @@
   let repeatPassword = '';
   let errorMsg = '';
 
-  $: loginValid = login.length > 2;
-  $: emailValid = /.+\@.+\..+/.test(email);
+  $: loginValid = login.length > 0;
+  // $: emailValid = /.+\@.+\..+/.test(email);
+  $: emailValid = email.length > 0;
   $: nameValid = name.length > 0;
-  $: passwordValid = password.length > 5 && password === repeatPassword;
+  // $: passwordValid = password.length > 5 && password === repeatPassword;
+  $: passwordValid = password.length > 0;
   $: disabled = !(loginValid && emailValid && nameValid && passwordValid);
   let loading = false;
 
@@ -50,7 +52,7 @@
     <Input label="Name" bind:value={name} />
     <Input label="Email" bind:value={email} />
     <Input label="Password" type="password" bind:value={password} />
-    <Input label="Repeat password" type="password" bind:value={repeatPassword} />
+    <!-- <Input label="Repeat password" type="password" bind:value={repeatPassword} /> -->
     <Button
       title="Register"
       disabled={disabled || loading}

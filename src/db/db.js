@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize';
 import crypto from 'crypto';
-import { send } from './email';
+// import { send } from './email';
 
 export const sequelize = new Sequelize({
   storage: 'db/db.sqlite',
@@ -51,7 +51,7 @@ const User = sequelize.define('user', {
   avatar: Sequelize.STRING,
 });
 
-sequelize.sync();
+sequelize.sync({force: true});
 
 function generateHash (password) {
   // TODO: add some salt, change hash function?
@@ -95,12 +95,12 @@ export async function checkEmailExist (newEmail) {
 
 export async function registerUser (newUser) {
   try {
-    const { id, login, name, avatar } = newUser;
+    const { id, login, name, avatar, email } = newUser;
     newUser.password = generateHash(newUser.password);
     await User.create(newUser);
     return {
       ok: true,
-      user: { id, login, name, avatar }
+      user: { id, login, name, avatar, email, password: newUser.password }
     };
   } catch(err) {
     if (err.errors && err.errors[0] && err.errors[0].validatorKey === 'not_unique') {
@@ -108,6 +108,12 @@ export async function registerUser (newUser) {
         ok: false,
         message: err.errors[0].message,
       }
+    } else {
+      console.log(err);
+      return {
+        ok: false,
+        message: 'Server error',
+      };
     }
   }
 }
@@ -118,7 +124,6 @@ export async function confirmEmail (hash) {
 
 export async function changePassword (tryHash, password) {
   console.log('Try hash', tryHash);
-  const passwords = loadJSON(passwordsDbFile);
   const findPassword = passwords.find(({ hash }) => hash === tryHash);
   if (!findPassword) {
     return {
@@ -132,15 +137,12 @@ export async function changePassword (tryHash, password) {
       message: 'Hash ok, wait for password',
     };
   }
-  const users = loadJSON(usersDbFile);
   const userFind = users.find(({ id }) => (id === findPassword.id));
   userFind.password = generateHash(password);
-  saveJSON(usersDbFile, users);
 }
 
 export async function createResetHash (login) {
   console.log('Create reset hash for login:', login);
-  const users = loadJSON(usersDbFile);
   const userFind = users.find((user) => (user.login === login));
   // TODO: check also email
   if (!userFind) {
@@ -152,7 +154,6 @@ export async function createResetHash (login) {
     }
   }
   const timeNow = Date.now();
-  let passwords = loadJSON(passwordsDbFile);
   // remove expired hashes
   passwords = passwords.filter(({time}) => (timeNow - time < 10 * 60 * 1000));
   // remove old hash for this userId
@@ -163,7 +164,6 @@ export async function createResetHash (login) {
     user_id: userFind.id,
     time: timeNow,
   })
-  saveJSON(passwordsDbFile, passwords);
   send(userFind.email, 'reset-pass', {
     name: userFind.name,
     hash: newHash,
