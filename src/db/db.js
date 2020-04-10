@@ -1,6 +1,5 @@
 import { Sequelize } from 'sequelize';
 import crypto from 'crypto';
-// import { send } from './email';
 
 export const sequelize = new Sequelize({
   storage: 'db/db.sqlite',
@@ -8,16 +7,34 @@ export const sequelize = new Sequelize({
   logging: false,
 });
 
-const User = sequelize.define('user', {
+// const userStatus = {
+//   'JUST_REGISTERED': 0,
+//   '': 1,
+// }
+
+const EmailConfirm = sequelize.define('EmailConfirm', {
+  hash: {
+    type: Sequelize.UUID,
+    primaryKey: true,
+    allowNull: false,
+    defaultValue: Sequelize.UUIDV4,
+  }
+});
+
+const PasswordReset = sequelize.define('PasswordReset', {
+  hash: {
+    type: Sequelize.UUID,
+    primaryKey: true,
+    allowNull: false,
+    defaultValue: Sequelize.UUIDV4,
+  }
+});
+
+const User = sequelize.define('User', {
   id: {
     type: Sequelize.INTEGER,
     primaryKey: true,
     autoIncrement: true,
-  },
-  isActive: {
-    type: Sequelize.BOOLEAN,
-    field: 'is_active',
-    defaultValue: false,
   },
   name: {
     type: Sequelize.STRING,
@@ -35,7 +52,7 @@ const User = sequelize.define('user', {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  email:  {
+  email: {
     type: Sequelize.STRING,
     allowNull: false,
     unique: {
@@ -43,15 +60,21 @@ const User = sequelize.define('user', {
       message: 'email already exist',
     },
   },
-  emailVerified: {
-    type: Sequelize.BOOLEAN,
-    field: 'email_verified',
-    defaultValue: false,
+  role: {
+    type: Sequelize.STRING,
+  },
+  status: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0,
   },
   avatar: Sequelize.STRING,
 });
 
-sequelize.sync({force: true});
+EmailConfirm.belongsTo(User);
+PasswordReset.belongsTo(User);
+
+// sequelize.sync({force: true});
+sequelize.sync();
 
 function generateHash (password) {
   // TODO: add some salt, change hash function?
@@ -95,12 +118,14 @@ export async function checkEmailExist (newEmail) {
 
 export async function registerUser (newUser) {
   try {
-    const { id, login, name, avatar, email } = newUser;
-    newUser.password = generateHash(newUser.password);
-    await User.create(newUser);
+    const { login, name, email, password } = newUser;
+    newUser.password = generateHash(password);
+    const { id } = await User.create(newUser);
+    const { hash } = await EmailConfirm.create({UserId: id});
+    const emailHash = hash;
     return {
       ok: true,
-      user: { id, login, name, avatar, email, password: newUser.password }
+      user: { id, login, name, email, emailHash }
     };
   } catch(err) {
     if (err.errors && err.errors[0] && err.errors[0].validatorKey === 'not_unique') {
@@ -119,58 +144,78 @@ export async function registerUser (newUser) {
 }
 
 export async function confirmEmail (hash) {
-  console.log(hash);
-}
-
-export async function changePassword (tryHash, password) {
-  console.log('Try hash', tryHash);
-  const findPassword = passwords.find(({ hash }) => hash === tryHash);
-  if (!findPassword) {
+  try {
+    // TODO: remove old records (more than 24h)
+    const emailConfirmRecord = await EmailConfirm.findOne({
+      where: { hash }
+    });
+    if (emailConfirmRecord) {
+      await User.update({ status: 1 }, {
+        where: { id: emailConfirmRecord.UserId }
+      });
+      await EmailConfirm.destroy({
+        where: { hash }
+      });
+      return {
+        ok: true,
+        userId: emailConfirmRecord.UserId,
+      }
+    }
     return {
       ok: false,
-      message: 'Error in hash',
-    };
-  }
-  if (password === '') {
+      message: 'Link not valid',
+    }
+  } catch(err) {
+    console.log(err);
     return {
-      ok: true,
-      message: 'Hash ok, wait for password',
-    };
+      ok: false,
+      message: 'Server error',
+    }
   }
-  const userFind = users.find(({ id }) => (id === findPassword.id));
-  userFind.password = generateHash(password);
+}
+
+export async function changePassword (hash, password) {
+  try {
+    // TODO: remove old records (more than 24h)
+    const passwordResetRecord = await PasswordReset.findOne({ where: { hash } });
+    if (passwordResetRecord) {
+      await User.update({ password: generateHash(password) }, {
+        where: { id: passwordResetRecord.UserId }
+      });
+      await PasswordReset.destroy({ where: { hash } });
+      return {
+        ok: true,
+      }
+    }
+    return {
+      ok: false,
+      message: 'Hash wrong',
+    }
+  } catch(err) {
+    console.log(err);
+    return {
+      ok: false,
+      message: 'Server error',
+    }
+  }
 }
 
 export async function createResetHash (login) {
-  console.log('Create reset hash for login:', login);
-  const userFind = users.find((user) => (user.login === login));
-  // TODO: check also email
-  if (!userFind) {
-    console.log('Login not found');
+  try {
+    // TODO: remove old records (more than 24h)
+    const user = await User.findOne({ where: { login } });
+    await PasswordReset.destroy({ where: { UserId: user.id }});
+    const passwordResetRecord = await PasswordReset.create({ UserId: user.id });
+    return {
+      ok: true,
+      email: user.email,
+      hash: passwordResetRecord.hash,
+    }
+  } catch(err) {
+    console.log(err);
     return {
       ok: false,
-      error: true,
-      message: 'Login not found',
+      message: 'Server error',
     }
-  }
-  const timeNow = Date.now();
-  // remove expired hashes
-  passwords = passwords.filter(({time}) => (timeNow - time < 10 * 60 * 1000));
-  // remove old hash for this userId
-  passwords = passwords.filter(({user_id}) => !(user_id === userFind.id));
-  const newHash = uuid();
-  passwords.push({
-    hash: newHash,
-    user_id: userFind.id,
-    time: timeNow,
-  })
-  send(userFind.email, 'reset-pass', {
-    name: userFind.name,
-    hash: newHash,
-  })
-  return {
-    ok: true,
-    error: false,
-    message: 'Check your email to reset password',
   }
 }

@@ -34,7 +34,6 @@
       email,
       password
     });
-    console.log(response);
     if (response.ok) {
       errorMsg = 'Registered';
       $session.user = response.user;

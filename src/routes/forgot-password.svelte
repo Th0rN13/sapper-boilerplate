@@ -20,7 +20,6 @@
       login,
     });
     loading = false;
-    console.log(response);
     if (response.ok) {
       errorMsg = 'Check your email to reset password';
     } else {

@@ -19,13 +19,12 @@ async function generateMailer () {
 generateMailer();
 
 export async function sendMail (address, link) {
-  console.log(address, link);
+  console.log('Send Email', address, link);
   let info = await transporter.sendMail({
     from: 'BoilerPlate Registration <some@mail.com>',
     to: address,
     subject: 'Confirm your registration',
-    text: `${link}`,
-    html: `<b>Hello world?<a>${link}</a></b>`,
+    html: `<a href="${link}">Confirm email</a>`,
   });
   console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
 }

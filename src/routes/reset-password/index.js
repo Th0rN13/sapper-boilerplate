@@ -1,8 +1,7 @@
 import { changePassword } from 'db/db.js';
 
-export function post(req, res) {
-  console.log('Post request');
+export async function post(req, res) {
   const { hash, newPassword } = req.body;
-  changePassword(hash, newPassword);
-  res.end(JSON.stringify({ ok: true }));
+  const result = await changePassword(hash, newPassword);
+  res.end(JSON.stringify(result));
 }
