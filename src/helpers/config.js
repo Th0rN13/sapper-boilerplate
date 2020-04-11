@@ -1,4 +1,9 @@
 import { config } from 'dotenv';
 config();
 
-export const databaseType = process.env.DATABASE_TYPE;
+export const {
+  EMAIL_HOST,
+  EMAIL_PORT,
+  EMAIL_LOGIN,
+  EMAIL_PASSWORD,
+} = process.env;

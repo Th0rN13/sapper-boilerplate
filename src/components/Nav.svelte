@@ -24,8 +24,8 @@
       name: 'Home',
     },
     {
-      href: 'about',
-      name: 'About',
+      href: 'chat',
+      name: 'Chat',
     },
   ];
 </script>

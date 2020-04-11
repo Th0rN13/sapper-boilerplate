@@ -1,50 +1,51 @@
 import nodemailer from 'nodemailer';
+import {
+  EMAIL_HOST,
+  EMAIL_PORT,
+  EMAIL_LOGIN,
+  EMAIL_PASSWORD,
+} from 'helpers/config';
 
+const host = EMAIL_HOST || 'smtp.ethereal.email';
+const port = +EMAIL_PORT || 587;
+let user = EMAIL_LOGIN || '';
+let pass = EMAIL_PASSWORD || '';
+const secure = port === 465;
+const emailCredentials = Boolean(EMAIL_HOST && EMAIL_PORT && EMAIL_LOGIN && EMAIL_PASSWORD);
 let transporter;
 
 async function generateMailer () {
-  const testAccount = await nodemailer.createTestAccount();
+  if (!emailCredentials) {
+    ({user, pass} = await nodemailer.createTestAccount());
+  }
 
   transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    secure: false,
-    auth: {
-      user: testAccount.user,
-      pass: testAccount.pass,
-    },
+    host,
+    port,
+    secure,
+    auth: { user, pass },
   });
 }
 
 generateMailer();
 
+const from = `BoilerPlate Registration ${EMAIL_LOGIN}`;
+const templates = {
+  confirm: {
+    subject: 'Confirm your registration',
+    html: (link) => `<html>Go to link: <a href="${link}">${link}</a> to confirm your adress</html>`,
+    text: (link) => `Go to link: ${link} to confirm your adress`,
+  }
+}
+
 export async function sendMail (address, link) {
   console.log('Send Email', address, link);
   let info = await transporter.sendMail({
-    from: 'BoilerPlate Registration <some@mail.com>',
+    from,
     to: address,
-    subject: 'Confirm your registration',
-    html: `<a href="${link}">Confirm email</a>`,
+    subject: templates.confirm.subject,
+    html: templates.confirm.html(link),
+    text: templates.confirm.text(link),
   });
-  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+  if (!emailCredentials) console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
 }
-
-// export function send2 (address, template, details) {
-//   switch (template)  {
-//     case 'reset-pass':
-//       console.log('Reset password email');
-//       console.log('Address:', address);
-//       console.log('Details:', JSON.stringify(details));
-//       break;
-//     case 'confirm-email':
-//       console.log('Confirm address email');
-//       console.log('Address:', address);
-//       console.log('Details:', JSON.stringify(details));
-//       break;
-//     default:
-//       console.log('Default email');
-//       console.log('Address:', address);
-//       console.log('Details:', JSON.stringify(details));
-//       break;
-//   }
-// }

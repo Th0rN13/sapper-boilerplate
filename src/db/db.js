@@ -7,6 +7,10 @@ export const sequelize = new Sequelize({
   logging: false,
 });
 
+
+// TODO: Request mail if not arrived
+// TODO: delete accounts if not activated due some time
+
 // const userStatus = {
 //   'JUST_REGISTERED': 0,
 //   '': 1,
@@ -73,8 +77,9 @@ const User = sequelize.define('User', {
 EmailConfirm.belongsTo(User);
 PasswordReset.belongsTo(User);
 
-// sequelize.sync({force: true});
-sequelize.sync();
+sequelize.sync(
+  // { force: true }
+);
 
 function generateHash (password) {
   // TODO: add some salt, change hash function?
@@ -100,20 +105,14 @@ export async function tryLogin (login, password) {
   return result;
 }
 
-// export async function loadProfile (idToFind) {
-//   const userFind = await User.findOne({
-//     where: { id: idToFind },
-//   }) || emptyUser;
-//   const { id, login, name, avatar } = userFind;
-//   return { id, login, name, avatar };
-// }
-
-export async function checkLoginExist (newLogin) {
-  return false;
+export async function checkLoginExist (login) {
+  const user = await User.findOne({ where: { login }});
+  return Boolean(user);
 }
 
-export async function checkEmailExist (newEmail) {
-  return false;
+export async function checkEmailExist (email) {
+  const user = await User.findOne({ where: { email }});
+  return Boolean(user);
 }
 
 export async function registerUser (newUser) {

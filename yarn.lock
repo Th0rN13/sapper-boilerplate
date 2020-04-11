@@ -1868,7 +1868,7 @@ fs.realpath@^1.0.0:
 
 "fulmo@https://github.com/Th0rN13/fulmo":
   version "0.1.1"
-  resolved "https://github.com/Th0rN13/fulmo#c9673ed82bc163cdbd03c1e54cfff5d9a634418b"
+  resolved "https://github.com/Th0rN13/fulmo#84cc00d3352f7d41f2c437730e34be433facee01"
 
 function-bind@^1.0.2, function-bind@^1.1.1:
   version "1.1.1"
