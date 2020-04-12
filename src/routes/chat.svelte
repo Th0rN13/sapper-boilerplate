@@ -6,22 +6,24 @@
 
 <script>
   import { stores } from '@sapper/app';
-  import { sendSocket } from 'helpers/socket.io';
-  import { chatStore } from 'stores/chat';
+  import { chatStore, sendSocket } from 'stores/chat';
   import AnimPage from 'AnimatePage.svelte';
   import { Input, Button } from 'fulmo/cmp';
   const { session } = stores();
 
   let chatMsg = '';
+  $: name = $session.user && $session.user.name || 'Anonimous user';
 
   function sendMsg () {
-    const message = {
-      id: Math.random(),
-      user: $session.user && $session.user.name || 'Anonimous user',
-      text: chatMsg,
-    };
-    sendSocket(message);
-    chatMsg = '';
+    if (chatMsg.length > 0) {
+      const message = {
+        id: Math.random(),
+        user: name,
+        text: chatMsg,
+      };
+      sendSocket(message);
+      chatMsg = '';
+    }
   }
   function clearMsg () {
     chatMsg = '';

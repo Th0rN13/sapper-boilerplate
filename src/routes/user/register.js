@@ -1,4 +1,4 @@
-import { registerUser } from 'db/db';
+import { registerUser } from 'helpers/db';
 import { sendMail } from 'helpers/email';
 
 export async function post(req, res) {

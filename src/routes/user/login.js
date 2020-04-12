@@ -1,4 +1,4 @@
-import { tryLogin } from 'db/db';
+import { tryLogin } from 'helpers/db';
 
 export async function post(req, res) {
   const result = await tryLogin(req.body.login, req.body.password);

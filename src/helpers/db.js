@@ -8,8 +8,8 @@ export const sequelize = new Sequelize({
 });
 
 
-// TODO: Request mail if not arrived
-// TODO: delete accounts if not activated due some time
+// TODO: Request a second email if you didn't get it, or activating link expired
+// TODO: Delete accounts that are not activated
 
 // const userStatus = {
 //   'JUST_REGISTERED': 0,

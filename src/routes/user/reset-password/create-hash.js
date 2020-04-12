@@ -1,4 +1,4 @@
-import { createResetHash } from 'db/db.js';
+import { createResetHash } from 'helpers/db.js';
 import { sendMail } from 'helpers/email';
 
 export async function post(req, res) {

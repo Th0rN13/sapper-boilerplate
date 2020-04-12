@@ -1,4 +1,4 @@
-import { confirmEmail } from 'db/db.js';
+import { confirmEmail } from 'helpers/db.js';
 
 export async function get(req, res) {
   const { hash } = req.params;

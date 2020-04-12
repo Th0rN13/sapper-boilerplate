@@ -5,7 +5,7 @@ import { json } from 'body-parser';
 import session from 'express-session';
 import sessionSequelize from 'express-session-sequelize';
 import * as sapper from '@sapper/server';
-import { sequelize } from 'db/db.js';
+import { sequelize } from 'helpers/db';
 import http from 'http';
 import io from 'socket.io';
 const sessionSequelizeStore = sessionSequelize(session.Store);
@@ -43,22 +43,22 @@ polka({ server })
 
 let numUsers = 0;
 
-io(server).on('connection', function(socket) {
+const ioServer = io(server);
+export const chatServer = ioServer.of('/chat');
+chatServer.on('connection', function(socket) {
   ++numUsers;
-  let message = 'Server: A new user has joined the chat';
-  socket.emit('user joined', { message, numUsers });
-  socket.broadcast.emit('user joined', { message, numUsers });
+  chatServer.emit('service message', `A new user has joined the chat, now ${numUsers} in chat`);
 
   socket.on('message', function(msg) {
-    socket.broadcast.emit('message', msg);
+    chatServer.emit('message', msg);
   })
 
   socket.on('disconnect', function() {
     --numUsers;
-    socket.broadcast.emit('user left', numUsers);
+    socket.broadcast.emit('service message', `${numUsers} users in chat.`);
   })
 
   socket.on('user disconnect', function(name) {
-    socket.broadcast.emit('message', `Server: ${name} has left the chat.`)
+    socket.broadcast.emit('service message', `${name} has left the chat.`)
   })
 });

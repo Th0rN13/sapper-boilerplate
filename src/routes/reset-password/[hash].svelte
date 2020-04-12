@@ -17,7 +17,7 @@
 
   async function handleRequest () {
     loading = true;
-    const response = await post('reset-password', { hash, newPassword: password });
+    const response = await post('user/reset-password', { hash, newPassword: password });
     loading = false;
     if (response.ok) {
       errorMsg = 'Now you can login with new password';

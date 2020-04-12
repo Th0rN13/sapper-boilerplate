@@ -1,4 +1,4 @@
-import { changePassword } from 'db/db.js';
+import { changePassword } from 'helpers/db.js';
 
 export async function post(req, res) {
   const { hash, newPassword } = req.body;
