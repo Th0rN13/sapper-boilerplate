@@ -2,35 +2,40 @@
   <title>Chat</title>
 </svelte:head>
 
+<svelte:window on:unload={emitUserDisconnect}/>
+
 <script>
   import { stores } from '@sapper/app';
+  import { sendSocket } from 'helpers/socket.io';
+  import { chatStore } from 'stores/chat';
   import AnimPage from 'AnimatePage.svelte';
   import { Input, Button } from 'fulmo/cmp';
   const { session } = stores();
 
-  let messages = [
-    { id: 0, user: 'admin', text: 'ban for all'},
-    { id: 1, user: 'weak user', text: 'Nooooooo!!!'},
-    { id: 2, user: 'admin', text: 'Ban weak user'},
-    { id: 3, user: 'other user', text: 'Ho-ho-ho!'},
-  ];
-
   let chatMsg = '';
 
   function sendMsg () {
-    console.log(`Msg sent (${$session.user.name}): ${chatMsg}`);
-    messages = [...messages, { id: messages.length, user: $session.user.name, text: chatMsg }];
+    const message = {
+      id: Math.random(),
+      user: $session.user && $session.user.name || 'Anonimous user',
+      text: chatMsg,
+    };
+    sendSocket(message);
     chatMsg = '';
   }
   function clearMsg () {
     chatMsg = '';
+  }
+
+  function emitUserDisconnect() {
+    socket.emit('user disconnect', name);
   }
 </script>
 
 <AnimPage>
   <div class="chat-wrapper">
     <div class="chat">
-      {#each messages as message (message.id)}
+      {#each $chatStore as message (message.id)}
         <div class="message">
           <strong>{message.user}:</strong>
           {message.text}

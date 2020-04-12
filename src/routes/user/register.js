@@ -1,5 +1,5 @@
 import { registerUser } from 'db/db';
-import { sendMail } from 'db/email';
+import { sendMail } from 'helpers/email';
 
 export async function post(req, res) {
   const result = await registerUser(req.body);

@@ -1,5 +1,5 @@
 import { createResetHash } from 'db/db.js';
-import { sendMail } from 'db/email';
+import { sendMail } from 'helpers/email';
 
 export async function post(req, res) {
   const { login } = req.body;
