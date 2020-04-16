@@ -30,3 +30,7 @@ export const chatStore = readable([], function (set) {
 export function sendSocket (message) {
   chat.send(message);
 }
+
+export function emitChatDisconnect() {
+  chat.emit('user disconnect', '%username%');
+}

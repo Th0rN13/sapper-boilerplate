@@ -8,8 +8,10 @@ import * as sapper from '@sapper/server';
 import { sequelize } from 'helpers/db';
 import http from 'http';
 import io from 'socket.io';
-const sessionSequelizeStore = sessionSequelize(session.Store);
+import { startChatServer, startNotifyServer } from 'socket';
+
 const server = http.createServer();
+const sessionSequelizeStore = sessionSequelize(session.Store);
 
 const { PORT, NODE_ENV } = process.env;
 const dev = NODE_ENV === 'development';
@@ -41,24 +43,6 @@ polka({ server })
     if (err) console.log('error', err);
   });
 
-let numUsers = 0;
-
 const ioServer = io(server);
-export const chatServer = ioServer.of('/chat');
-chatServer.on('connection', function(socket) {
-  ++numUsers;
-  chatServer.emit('service message', `A new user has joined the chat, now ${numUsers} in chat`);
-
-  socket.on('message', function(msg) {
-    chatServer.emit('message', msg);
-  })
-
-  socket.on('disconnect', function() {
-    --numUsers;
-    socket.broadcast.emit('service message', `${numUsers} users in chat.`);
-  })
-
-  socket.on('user disconnect', function(name) {
-    socket.broadcast.emit('service message', `${name} has left the chat.`)
-  })
-});
+startChatServer(ioServer);
+startNotifyServer(ioServer);

@@ -27,6 +27,10 @@
       href: 'chat',
       name: 'Chat',
     },
+    {
+      href: 'notify',
+      name: 'Notify all',
+    },
   ];
 </script>
 

@@ -2,17 +2,18 @@
   <title>Chat</title>
 </svelte:head>
 
-<svelte:window on:unload={emitUserDisconnect}/>
-
 <script>
+  import { onDestroy } from 'svelte';
   import { stores } from '@sapper/app';
-  import { chatStore, sendSocket } from 'stores/chat';
+  import { chatStore, sendSocket, emitChatDisconnect } from 'stores/chat';
   import AnimPage from 'AnimatePage.svelte';
   import { Input, Button } from 'fulmo/cmp';
   const { session } = stores();
 
   let chatMsg = '';
   $: name = $session.user && $session.user.name || 'Anonimous user';
+
+  onDestroy(emitChatDisconnect);
 
   function sendMsg () {
     if (chatMsg.length > 0) {
@@ -27,10 +28,6 @@
   }
   function clearMsg () {
     chatMsg = '';
-  }
-
-  function emitUserDisconnect() {
-    socket.emit('user disconnect', name);
   }
 </script>
 
@@ -68,6 +65,7 @@
     border-radius: 2px;
     box-shadow: 4px 1px 4px 4px rgba(0, 0, 0, 0.1);
     padding: 8px;
+    overflow: auto;
   }
   .message {
     padding: 4px;
