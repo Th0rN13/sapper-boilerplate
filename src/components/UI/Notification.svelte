@@ -1,9 +1,9 @@
 <div>
-  <slot/>
+	<slot />
 </div>
 
 <style>
-  div {
-    padding: 4px;
-  }
+	div {
+		padding: 4px;
+	}
 </style>

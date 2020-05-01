@@ -8,5 +8,6 @@
 - Upload avatar (crop? resize?)
 
 ## TODO:
+
 - forgot password
 - confirm email

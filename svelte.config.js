@@ -1,9 +1,9 @@
-const sveltePreprocess = require('svelte-preprocess')
+const sveltePreprocess = require('svelte-preprocess');
 
 const preprocess = sveltePreprocess({
-  postcss: true,
+	postcss: true,
 });
 
 module.exports = {
-  preprocess: preprocess,
-}
+	preprocess: preprocess,
+};
